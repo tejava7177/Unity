@@ -11,7 +11,6 @@ public class PlatformSpawner : MonoBehaviour
     public float timeBetSpawnMax = 2.25f;
     private float timeBetSpawn;
 
-
     public float yMin = -3.5f;
     public float yMax = 1.5f;
     private float xPos = 20f;
@@ -22,13 +21,11 @@ public class PlatformSpawner : MonoBehaviour
     private Vector2 poolPosition = new Vector2(0, -20);
     private float lastSpawnTime;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         platforms = new GameObject[count];
-
-        for(int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++)
+        {
             platforms[i] = Instantiate(platformPrefab, poolPosition, Quaternion.identity);
         }
 
@@ -36,18 +33,18 @@ public class PlatformSpawner : MonoBehaviour
         timeBetSpawn = 0f;
     }
 
-    void Update(){
-        if(GameManager.instance.isGameover){
+    void Update()
+    {
+        if (GameManager.instance.isGameover)
+        {
             return;
         }
 
-        if(Time.time >= lastSpawnTime + timeBetSpawn){
+        if (Time.time >= lastSpawnTime + timeBetSpawn)
+        {
             lastSpawnTime = Time.time;
-
             timeBetSpawn = Random.Range(timeBetSpawnMin, timeBetSpawnMax);
-
             float yPos = Random.Range(yMin, yMax);
-
 
             platforms[currentIndex].SetActive(false);
             platforms[currentIndex].SetActive(true);
@@ -55,8 +52,8 @@ public class PlatformSpawner : MonoBehaviour
             platforms[currentIndex].transform.position = new Vector2(xPos, yPos);
             currentIndex++;
 
-
-            if(currentIndex >= count){
+            if (currentIndex >= count)
+            {
                 currentIndex = 0;
             }
         }

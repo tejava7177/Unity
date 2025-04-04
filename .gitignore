@@ -81,7 +81,7 @@ crashlytics-build.properties
 *.bin
 *.dll
 *.meta
-*.cs
+
 *.png
 *.pdf
 *.wav

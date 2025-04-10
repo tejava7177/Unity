@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -18,7 +19,11 @@ public class GameManager : MonoBehaviour
     public GameObject[] backgrounds; // 낮-저녁-밤 순으로 넣기
 
     private int score = 0;
-    private float gameTime = 0f;
+    [SerializeField] private float maxTime = 60f;
+    private float currentTime;
+
+
+    private bool isBlinking = false; //깜빡임 추가
 
     void Awake()
     {
@@ -26,6 +31,11 @@ public class GameManager : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
+    }
+
+    void Start()
+    {
+        currentTime = maxTime;
     }
 
     void Update()
@@ -37,13 +47,26 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // 게임 시간 누적
-        gameTime += Time.deltaTime;
+        // 타이머 감소
+        currentTime -= Time.deltaTime;
+        if (currentTime <= 0f)
+        {
+            currentTime = 0f;
+            OnPlayerDead();
+        }
 
-        // 시간 텍스트 UI 업데이트
-        timerText.text = $"Time : {gameTime:F2}s";
 
-        // 배경 전환 로직 실행
+        if (currentTime <= 10f && !isBlinking)
+        {
+            StartCoroutine(BlinkTimerText());
+        }
+
+        int seconds = (int)currentTime % 60;
+        int milliseconds = (int)((currentTime % 1f) * 100);
+
+        timerText.text = $"Time : {seconds:00}.{milliseconds:00}s";
+
+        // 배경 전환
         UpdateBackground();
     }
 
@@ -51,8 +74,9 @@ public class GameManager : MonoBehaviour
     {
         if (backgrounds.Length == 0) return;
 
-        // 0~20초 -> index 0, 20~40초 -> index 1, 40~60초 -> index 2, 그 다음 0부터 반복
-        int index = (int)(gameTime / 20f) % backgrounds.Length;
+        // 경과 시간 기준으로 배경 전환
+        float elapsedTime = maxTime - currentTime;
+        int index = (int)(elapsedTime / 20f) % backgrounds.Length;
 
         for (int i = 0; i < backgrounds.Length; i++)
         {
@@ -71,12 +95,33 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDead()
     {
         isGameover = true;
-        gameoverUI.SetActive(false);
+        gameoverUI.SetActive(true);
     }
 
     public void ReduceTime(float amount)
     {
-        gameTime -= amount;
-        if (gameTime < 0f) gameTime = 0f;
+        currentTime -= amount;
+        if (currentTime < 0f)
+            currentTime = 0f;
+    }
+
+
+    private IEnumerator BlinkTimerText()
+    {
+        isBlinking = true;
+
+        Color normalColor = Color.white;
+        Color warningColor = Color.red;
+
+        while (currentTime > 0)
+        {
+            timerText.color = warningColor;
+            yield return new WaitForSeconds(0.3f);
+            timerText.color = normalColor;
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        // 시간 다 지나면 마지막 색상 고정
+        timerText.color = warningColor;
     }
 }

@@ -4,27 +4,35 @@ using UnityEngine;
 
 public class BalloonSpawner : MonoBehaviour
 {
-    public GameObject balloonPrefab;       // 노란 풍선 프리팹
-    public float spawnInterval = 1.5f;     // 생성 주기
-    public float xMin = -2.5f, xMax = 2.5f; // X 생성 범위
+    public GameObject balloonPrefab;
 
+    public float spawnIntervalMin = 0.7f;
+    public float spawnIntervalMax = 1.2f;
+
+    private float currentInterval;
     private float timer = 0f;
-    private Camera cam;
 
     void Start()
     {
-        cam = Camera.main;
+        currentInterval = Random.Range(spawnIntervalMin, spawnIntervalMax);
     }
 
     void Update()
     {
         timer += Time.deltaTime;
 
-        if (timer >= spawnInterval)
+        if (timer >= currentInterval)
         {
             timer = 0f;
+            currentInterval = Random.Range(spawnIntervalMin, spawnIntervalMax); // 다음 타이밍 설정
 
-            Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(Random.Range(0.1f, 0.9f), 1.1f, 10f));
+            float camHeight = Camera.main.orthographicSize;
+            float camWidth = camHeight * Camera.main.aspect;
+
+            float xPos = Random.Range(-camWidth + 0.5f, camWidth - 0.5f);
+            float yPos = camHeight + 1f;
+
+            Vector3 spawnPos = new Vector3(xPos, yPos, 0f);
             Instantiate(balloonPrefab, spawnPos, Quaternion.identity);
         }
     }

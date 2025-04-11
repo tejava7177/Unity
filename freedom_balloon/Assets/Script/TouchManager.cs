@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+
 public class TouchManager : MonoBehaviour
 {
     public GameObject blueBalloonPrefab;
+    public GameObject purpleBalloonPrefab;
 
     void Update()
     {
@@ -16,13 +18,38 @@ public class TouchManager : MonoBehaviour
 
             if (col != null && col.CompareTag("Balloon"))
             {
+                Balloon balloon = col.GetComponent<Balloon>();
+
+                // ✅ 풍선에 Balloon.cs 없거나 떠오르는 중이면 무시
+                if (balloon == null || balloon.isLaunching) return;
+
                 Vector3 pos = col.transform.position;
 
-                // 기존 노란 풍선 제거
-                Destroy(col.gameObject);
+                switch (balloon.balloonColor)
+                {
+                    case Balloon.BalloonColor.Yellow:
+                        Destroy(col.gameObject);
+                        GameObject newBlue = Instantiate(blueBalloonPrefab, pos, Quaternion.identity);
 
-                // 파란 풍선 생성 → Balloon.cs 안에서 알아서 떠오르게 됨!
-                Instantiate(blueBalloonPrefab, pos, Quaternion.identity);
+                        // ✅ 확인 로그 (디버그용)
+                        Debug.Log("💙 파란 풍선 생성됨");
+
+                        GameManager.instance.AddScore(10);
+                        break;
+
+                    case Balloon.BalloonColor.Blue:
+                        Destroy(col.gameObject);
+                        GameObject newPurple = Instantiate(purpleBalloonPrefab, pos, Quaternion.identity);
+
+                        Debug.Log("💜 보라 풍선 생성됨");
+
+                        GameManager.instance.AddScore(20);
+                        break;
+
+                    case Balloon.BalloonColor.Purple:
+                        // 보라 풍선은 아무 처리 없음
+                        break;
+                }
             }
         }
     }

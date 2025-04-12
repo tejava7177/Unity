@@ -7,6 +7,8 @@ public class BalloonSpawner : MonoBehaviour
     [Header("풍선 프리팹")]
     public GameObject normalBalloonPrefab;
     public GameObject timeBonusBalloonPrefab;
+    public GameObject scoreBonusBalloonPrefab;
+    public GameObject slowBalloonPrefab;
 
     [Header("생성 간격")]
     public float spawnIntervalMin = 0.7f;
@@ -14,6 +16,9 @@ public class BalloonSpawner : MonoBehaviour
 
     [Header("보너스 풍선 확률 (0~1)")]
     [Range(0f, 1f)] public float timeBonusChance = 0.1f; // 10% 확률
+    [Range(0f, 1f)] public float scoreBonusChance = 0.05f;
+    [Range(0f, 1f)] public float slowBalloonChance = 0.05f;
+
 
     private float currentInterval;
     private float timer = 0f;
@@ -55,6 +60,7 @@ public class BalloonSpawner : MonoBehaviour
 
         // 🎯 확률 기반 보너스 풍선 생성
         float rand = Random.value;
+
         if (rand <= timeBonusChance)
         {
             prefabToSpawn = timeBonusBalloonPrefab;
@@ -64,6 +70,45 @@ public class BalloonSpawner : MonoBehaviour
             prefabToSpawn = normalBalloonPrefab;
         }
 
+
+        if (rand <= scoreBonusChance)
+        {
+            prefabToSpawn = scoreBonusBalloonPrefab;
+        }
+        else if (rand <= scoreBonusChance + timeBonusChance)
+        {
+            prefabToSpawn = timeBonusBalloonPrefab;
+        }
+        else
+        {
+            prefabToSpawn = normalBalloonPrefab;
+        }
+
+
+
+        if (rand <= slowBalloonChance)
+        {
+            prefabToSpawn = slowBalloonPrefab;
+        }
+        else if (rand <= slowBalloonChance + timeBonusChance)
+        {
+            prefabToSpawn = timeBonusBalloonPrefab;
+        }
+        else if (rand <= slowBalloonChance + timeBonusChance + scoreBonusChance)
+        {
+            prefabToSpawn = scoreBonusBalloonPrefab;
+        }
+        else
+        {
+            prefabToSpawn = normalBalloonPrefab;
+        }
+
+
         Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+
+
+
+
+
     }
 }

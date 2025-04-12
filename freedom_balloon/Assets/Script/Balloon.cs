@@ -8,6 +8,8 @@ public enum BalloonType
 {
     Normal,     // 기존 풍선
     TimeBonus,  // 시간 보너스 풍선
+    ScoreBonus, // ⭐ 점수 2배 풍선
+    SlowEffect  //느려지는 풍선 타입
 }
 
 public class Balloon : MonoBehaviour

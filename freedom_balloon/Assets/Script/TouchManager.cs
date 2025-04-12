@@ -53,6 +53,23 @@ public class TouchManager : MonoBehaviour
                 return;
             }
 
+            if (balloon.balloonType == BalloonType.ScoreBonus)
+            {
+                Destroy(col.gameObject);
+                GameManager.instance.ActivateDoubleScore();
+                Debug.Log("💫 점수 2배 보너스 풍선 터치!");
+                return;
+            }
+
+
+            if (balloon.balloonType == BalloonType.SlowEffect)
+            {
+                Destroy(col.gameObject);
+                GameManager.instance.ApplySlowEffect();
+                Debug.Log("🐌 느려지는 풍선 터치! → 낙하 속도 감소");
+                return;
+            }
+
             // 🚫 떠오르는 풍선은 무시
             if (balloon.isLaunching)
             {

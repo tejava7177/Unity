@@ -19,6 +19,21 @@ public class GameManager : MonoBehaviour
     public GameObject[] backgrounds; // 낮-저녁-밤 순으로 넣기
 
 
+    [Header("풍선 속도 제어")]
+    public float normalGravityScale = 0.5f;
+    public float slowGravityScale = 0.2f;
+    public float slowDuration = 5f;
+
+    private Coroutine slowEffectCoroutine;
+
+
+
+    // 🔥 점수 2배 상태 관련 변수
+    private bool isDoubleScore = false;
+    private float doubleScoreDuration = 7f;
+    private float doubleScoreTimer = 0f;
+
+
 
     private int score = 0;
     [SerializeField] private float maxTime = 60f;
@@ -62,6 +77,18 @@ public class GameManager : MonoBehaviour
         if (currentTime <= 10f && !isBlinking)
         {
             StartCoroutine(BlinkTimerText());
+        }
+
+
+        // ⏳ 점수 2배 타이머 처리
+        if (isDoubleScore)
+        {
+            doubleScoreTimer -= Time.deltaTime;
+            if (doubleScoreTimer <= 0f)
+            {
+                isDoubleScore = false;
+                Debug.Log("🔚 점수 2배 효과 종료");
+            }
         }
 
         int seconds = (int)currentTime % 60;
@@ -126,8 +153,14 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int amount)
     {
+        if (isDoubleScore)
+        {
+            amount *= 2;
+            Debug.Log($"💥 점수 2배 적용! +{amount}");
+        }
+
         score += amount;
-        UpdateScoreText();
+        scoreText.text = $"Score : {score}";
     }
 
     public void AddTime(float time)
@@ -139,6 +172,14 @@ public class GameManager : MonoBehaviour
         Debug.Log($"⏱️ 시간 추가됨! 현재 시간: {currentTime:F1}s");
     }
 
+    // 점수 2배 발동 함수
+    public void ActivateDoubleScore()
+    {
+        isDoubleScore = true;
+        doubleScoreTimer = doubleScoreDuration;
+        Debug.Log("🔥 점수 2배 효과 시작 (7초)");
+    }
+
     void UpdateScoreText()
     {
         if (scoreText != null)
@@ -148,4 +189,57 @@ public class GameManager : MonoBehaviour
     }
 
     public int GetScore() => score;
+
+
+
+    public void ApplySlowEffect()
+    {
+        if (slowEffectCoroutine != null)
+            StopCoroutine(slowEffectCoroutine);
+
+        slowEffectCoroutine = StartCoroutine(SlowEffectRoutine());
+    }
+
+    private IEnumerator SlowEffectRoutine()
+    {
+        Debug.Log("🐌 풍선 속도 느려짐 시작");
+
+        // 현재 씬의 모든 풍선 확인
+        Balloon[] allBalloons = FindObjectsOfType<Balloon>();
+        foreach (Balloon balloon in allBalloons)
+        {
+            // ✅ Slow 풍선은 제외
+            if (balloon.balloonType == BalloonType.Normal)
+            {
+                if (balloon.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
+                {
+                    rb.gravityScale = slowGravityScale; // 예: 0.1f
+                    Debug.Log($"⬇️ 느려진 풍선: {balloon.name}");
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(slowDuration); // 예: 5초
+
+        // 다시 원래 속도로 복귀
+        allBalloons = FindObjectsOfType<Balloon>();
+        foreach (Balloon balloon in allBalloons)
+        {
+            if (balloon.balloonType == BalloonType.Normal)
+            {
+                if (balloon.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
+                {
+                    rb.gravityScale = normalGravityScale; // 예: 0.5f
+                    Debug.Log($"↗️ 원래 속도 복귀: {balloon.name}");
+                }
+            }
+        }
+
+        Debug.Log("🐌 풍선 속도 느려짐 종료");
+        slowEffectCoroutine = null;
+    }
+
+
+
+
 }

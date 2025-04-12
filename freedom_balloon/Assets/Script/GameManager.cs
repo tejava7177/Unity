@@ -130,6 +130,15 @@ public class GameManager : MonoBehaviour
         UpdateScoreText();
     }
 
+    public void AddTime(float time)
+    {
+        currentTime += time;
+        if (currentTime > maxTime)
+            currentTime = maxTime; // 최대 제한 (선택)
+
+        Debug.Log($"⏱️ 시간 추가됨! 현재 시간: {currentTime:F1}s");
+    }
+
     void UpdateScoreText()
     {
         if (scoreText != null)

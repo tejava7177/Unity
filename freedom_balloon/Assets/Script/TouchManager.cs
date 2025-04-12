@@ -9,6 +9,7 @@ public class TouchManager : MonoBehaviour
     public GameObject blueBalloonPrefab;
     public GameObject purpleBalloonPrefab;
 
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -20,10 +21,22 @@ public class TouchManager : MonoBehaviour
             {
                 Balloon balloon = col.GetComponent<Balloon>();
 
+                // 🎯 보너스 풍선인지 먼저 확인!
+                if (balloon.balloonType == BalloonType.TimeBonus)
+                {
+                    Destroy(col.gameObject);
+                    GameManager.instance.AddTime(5f); // +5초
+                    Debug.Log("⏱️ 시간 보너스 풍선 터치! +5초");
+                    return;
+                }
+
                 // ✅ 풍선에 Balloon.cs 없거나 떠오르는 중이면 무시
                 if (balloon == null || balloon.isLaunching) return;
 
                 Vector3 pos = col.transform.position;
+
+
+                
 
                 switch (balloon.balloonColor)
                 {

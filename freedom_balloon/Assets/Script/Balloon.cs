@@ -4,10 +4,20 @@ using UnityEngine;
 
 
 
+public enum BalloonType
+{
+    Normal,     // 기존 풍선
+    TimeBonus,  // 시간 보너스 풍선
+}
+
 public class Balloon : MonoBehaviour
 {
 
     public enum BalloonColor { Yellow, Blue, Purple }
+
+
+    public BalloonType balloonType = BalloonType.Normal;
+
     public BalloonColor balloonColor = BalloonColor.Yellow;
 
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -240,6 +241,26 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public IEnumerator ExplodeAllBalloons()
+    {
+        Debug.Log("🔥 전체 풍선 터뜨리기 시작!");
+        Time.timeScale = 0f; // 게임 정지
+
+        List<Balloon> balloons = new List<Balloon>(FindObjectsOfType<Balloon>());
+
+        // X 좌표 기준 정렬
+        balloons.Sort((a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
+
+        foreach (Balloon b in balloons)
+        {
+            // 효과 적용 (시간 추가, 점수 등)
+            TouchManager.SimulateBalloonTouch(b);
+            yield return new WaitForSecondsRealtime(0.1f); // 하나씩 터지는 연출
+        }
+
+        Time.timeScale = 1f; // 게임 재개
+        Debug.Log("🎉 전체 풍선 터뜨리기 종료!");
+    }
 
 
 }

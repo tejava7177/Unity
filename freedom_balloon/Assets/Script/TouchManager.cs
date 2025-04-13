@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems; // 추가!
 
 public class TouchManager : MonoBehaviour
 {
@@ -10,8 +10,20 @@ public class TouchManager : MonoBehaviour
 
     void Update()
     {
+
+
         if (Input.GetMouseButtonDown(0))
         {
+
+            // 🎯 마우스 클릭 + UI 위에 있을 때만 무시
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                Debug.Log("⚠️ UI 클릭 감지됨 → Balloon 처리 안함");
+                return;
+            }
+
+            
+
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Collider2D col = Physics2D.OverlapPoint(worldPos);
 
@@ -103,5 +115,43 @@ public class TouchManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+
+
+
+    public static void SimulateBalloonTouch(Balloon balloon)
+    {
+        if (balloon == null) return;
+
+        switch (balloon.balloonType)
+        {
+            case BalloonType.TimeBonus:
+                GameManager.instance.AddTime(5f);
+                break;
+
+            case BalloonType.ScoreBonus:
+                GameManager.instance.ActivateDoubleScore(); // ✅ 수정 완료
+                break;
+
+            case BalloonType.SlowEffect:
+                GameManager.instance.ApplySlowEffect(); // ✅ 수정 완료
+                break;
+        }
+
+        switch (balloon.balloonColor)
+        {
+            case Balloon.BalloonColor.Yellow:
+                GameManager.instance.AddScore(10);
+                break;
+            case Balloon.BalloonColor.Blue:
+                GameManager.instance.AddScore(20);
+                break;
+            case Balloon.BalloonColor.Purple:
+                GameManager.instance.AddScore(30);
+                break;
+        }
+
+        Destroy(balloon.gameObject);
     }
 }

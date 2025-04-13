@@ -11,18 +11,15 @@ public class TouchManager : MonoBehaviour
     void Update()
     {
 
-
         if (Input.GetMouseButtonDown(0))
         {
-
             // 🎯 마우스 클릭 + UI 위에 있을 때만 무시
-            if (EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject(-1))
             {
                 Debug.Log("⚠️ UI 클릭 감지됨 → Balloon 처리 안함");
                 return;
             }
 
-            
 
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Collider2D col = Physics2D.OverlapPoint(worldPos);

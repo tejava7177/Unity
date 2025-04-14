@@ -4,12 +4,15 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
     [Header("게임 상태")]
     public bool isGameover = false;
+
+    public static bool isInNameInputMode = false;
 
     [Header("UI")]
     public TextMeshProUGUI scoreText;
@@ -19,6 +22,7 @@ public class GameManager : MonoBehaviour
     [Header("배경 오브젝트")]
     public GameObject[] backgrounds; // 낮-저녁-밤 순으로 넣기
 
+    public NameInputManager nameInputManager;
 
     [Header("풍선 속도 제어")]
     public float normalGravityScale = 0.5f;
@@ -53,6 +57,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        //Debug.Log("🛑 GameManager 시작됨 → 활성화 여부: " + this.enabled);
         currentTime = maxTime;
         UpdateScoreText();
     }
@@ -121,6 +126,8 @@ public class GameManager : MonoBehaviour
     {
         isGameover = true;
         gameoverUI.SetActive(true);
+
+        nameInputManager.Show(); // ✅ 입력 패널 보여주기
     }
 
     public void ReduceTime(float amount)
@@ -263,4 +270,9 @@ public class GameManager : MonoBehaviour
     }
 
 
+
+    public bool IsGamePlayable()
+    {
+        return this.enabled && !isGameover && !GameManager.isInNameInputMode;
+    }
 }

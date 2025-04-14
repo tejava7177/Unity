@@ -1,65 +1,74 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System.Linq;
 
 public class RankingManager : MonoBehaviour
 {
     public static RankingManager instance;
 
-    private const string RankingKey = "RankingData";
+    private string savePath;
+
     public List<PlayerScore> rankings = new List<PlayerScore>();
+    private int maxRankCount = 5;
 
-    private void Awake()
+    void Awake()
     {
-        if (instance == null)
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
+
+        savePath = Application.persistentDataPath + "/rankings.json";
+        LoadRanking();
+    }
+
+    public void AddNewScore(string name, int score)
+    {
+        PlayerScore newEntry = new PlayerScore(name, score);
+        rankings.Add(newEntry);
+
+        // 높은 점수 순 정렬 후 상위 5개만 저장
+        rankings = rankings.OrderByDescending(r => r.score).Take(maxRankCount).ToList();
+
+        SaveRanking();
+
+        Debug.Log($"💾 랭킹 저장 완료! {name} - {score}");
+    }
+
+    void SaveRanking()
+    {
+        string json = JsonUtility.ToJson(new RankingListWrapper(rankings), true);
+        File.WriteAllText(savePath, json);
+    }
+
+    void LoadRanking()
+    {
+        if (File.Exists(savePath))
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject); // 씬 이동에도 유지
-            LoadRankings(); // 게임 시작 시 불러오기
-        }
-        else
-        {
-            Destroy(gameObject);
+            string json = File.ReadAllText(savePath);
+            rankings = JsonUtility.FromJson<RankingListWrapper>(json).list;
         }
     }
 
-    // 🔽 랭킹 불러오기
-    public void LoadRankings()
+    // JSON으로 리스트 저장을 위한 래퍼
+    [System.Serializable]
+    private class RankingListWrapper
     {
-        rankings.Clear();
-
-        for (int i = 0; i < 5; i++)
-        {
-            string key = $"Rank_{i}";
-            if (PlayerPrefs.HasKey(key))
-            {
-                string json = PlayerPrefs.GetString(key);
-                PlayerScore data = JsonUtility.FromJson<PlayerScore>(json);
-                rankings.Add(data);
-            }
-        }
+        public List<PlayerScore> list;
+        public RankingListWrapper(List<PlayerScore> rankings) => list = rankings;
     }
 
-    // 🔼 새 점수 저장 시 랭킹 업데이트
-    public void AddNewScore(string nickname, int score)
+    public List<PlayerScore> GetRankingList()
     {
-        PlayerScore newScore = new PlayerScore(nickname, score);
-        rankings.Add(newScore);
-
-        // 점수 내림차순 정렬
-        rankings.Sort((a, b) => b.score.CompareTo(a.score));
-
-        // 상위 5개만 저장
-        if (rankings.Count > 5)
-            rankings.RemoveRange(5, rankings.Count - 5);
-
-        // 저장
-        for (int i = 0; i < rankings.Count; i++)
-        {
-            string json = JsonUtility.ToJson(rankings[i]);
-            PlayerPrefs.SetString($"Rank_{i}", json);
-        }
-
-        PlayerPrefs.Save();
+        return rankings;
     }
+
+
+    // [ContextMenu("🔥 디버그용 랭킹 출력")]
+    // public void DebugPrintRanking()
+    // {
+    //     foreach (var r in rankings)
+    //     {
+    //         Debug.Log($"{r.name} - {r.score}");
+    //     }
+    // }
 }

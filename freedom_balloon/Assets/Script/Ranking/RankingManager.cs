@@ -14,10 +14,23 @@ public class RankingManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        Debug.Log("🟡 RankingManager.Awake() 진입");
+
+        if (instance == null)
+        {
+            instance = this;
+            Debug.Log("✅ RankingManager instance 등록 완료");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 이미 RankingManager 인스턴스가 존재하여 삭제됨");
+            Destroy(gameObject);
+            return;
+        }
 
         savePath = Application.persistentDataPath + "/rankings.json";
+        Debug.Log("📁 랭킹 저장 위치: " + savePath);
+
         LoadRanking();
     }
 

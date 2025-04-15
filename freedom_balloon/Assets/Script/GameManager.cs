@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 
     [Header("풍선 속도 제어")]
     public float normalGravityScale = 0.5f;
-    public float slowGravityScale = 0.2f;
+    public float slowGravityScale = 0.1f;
     public float slowDuration = 5f;
 
     private Coroutine slowEffectCoroutine;
@@ -110,7 +110,6 @@ public class GameManager : MonoBehaviour
     {
         if (backgrounds.Length == 0) return;
 
-        // 경과 시간 기준으로 배경 전환
         float elapsedTime = maxTime - currentTime;
         int index = (int)(elapsedTime / 20f) % backgrounds.Length;
 
@@ -118,9 +117,21 @@ public class GameManager : MonoBehaviour
         {
             backgrounds[i].SetActive(i == index);
         }
+
+        // 🔥 배경이 밤(마지막 인덱스)인 경우 텍스트를 하얀색으로 변경
+        if (index == backgrounds.Length - 1) // 예: index == 2 → 밤
+        {
+            scoreText.color = Color.white;
+            timerText.color = Color.white;
+        }
+        else
+        {
+            scoreText.color = Color.black;
+            timerText.color = Color.black;
+        }
     }
 
-   
+
 
     public void OnPlayerDead()
     {

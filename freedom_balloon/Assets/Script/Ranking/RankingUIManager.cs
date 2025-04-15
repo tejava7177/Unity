@@ -7,6 +7,8 @@ public class RankingUIManager : MonoBehaviour
     public GameObject rankingPanel;
     public TextMeshProUGUI[] rankTexts;
 
+    public GameObject titleText;
+
     void Start()
     {
         rankingPanel.SetActive(false); // 처음엔 숨김
@@ -29,10 +31,12 @@ public class RankingUIManager : MonoBehaviour
         }
 
         rankingPanel.SetActive(true);
+        titleText.SetActive(false); // ✅ 제목 가리기
     }
 
     public void HideRanking()
     {
         rankingPanel.SetActive(false);
+        titleText.SetActive(true); // ✅ 제목 가리기
     }
 }

@@ -38,6 +38,14 @@ public class Balloon : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    public AudioClip popSFX;
+    private AudioSource audioSource;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -92,4 +100,15 @@ public class Balloon : MonoBehaviour
 
         transform.position = pos;
     }
+
+    public void Pop()
+    {
+        if (popSFX != null && audioSource != null)
+        {
+            AudioSource.PlayClipAtPoint(popSFX, transform.position); // ✅ 사운드만 따로 재생
+        }
+
+        Destroy(gameObject); // 즉시 파괴
+    }
+
 }

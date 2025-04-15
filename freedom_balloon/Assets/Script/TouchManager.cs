@@ -107,7 +107,7 @@ public class TouchManager : MonoBehaviour
                 break;
         }
 
-        Destroy(balloon.gameObject);
+        balloon.Pop(); // ✅ Destroy 대신 Pop 호출!
     }
 
     /// <summary>

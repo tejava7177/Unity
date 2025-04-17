@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
 
     // 타이머 깜빡임 여부
     private bool isBlinking = false;
+    public GameObject dogSkillButton; // Inspector 연결 필요
+
 
     void Awake()
     {
@@ -125,6 +127,8 @@ public class GameManager : MonoBehaviour
     {
         isGameover = true;
         gameoverUI.SetActive(true);
+        if (dogSkillButton != null)
+            dogSkillButton.SetActive(false);  // ← 여기 추가
         nameInputManager.Show();
     }
 

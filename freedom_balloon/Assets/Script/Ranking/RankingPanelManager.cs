@@ -18,6 +18,7 @@ public class RankingPanelManager : MonoBehaviour, IPointerClickHandler
     {
         rankingPanel.SetActive(true);
         titleText.SetActive(false); // 타이틀 숨김
+        
     }
 
     // 랭킹 패널 닫기
